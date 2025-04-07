@@ -3,6 +3,9 @@ import {
   extractReasoningMiddleware,
   wrapLanguageModel,
 } from 'ai';
+import { createGoogleGenerativeAI } from '@ai-sdk/google';
+
+
 import { groq } from '@ai-sdk/groq';
 import { xai } from '@ai-sdk/xai';
 import { isTestEnvironment } from '../constants';
@@ -12,6 +15,10 @@ import {
   reasoningModel,
   titleModel,
 } from './models.test';
+
+const google = createGoogleGenerativeAI({
+  apiKey: process.env.GOOGLE_API_KEY
+})
 
 export const myProvider = isTestEnvironment
   ? customProvider({
@@ -24,7 +31,7 @@ export const myProvider = isTestEnvironment
     })
   : customProvider({
       languageModels: {
-        'chat-model': xai('grok-2-1212'),
+        'chat-model': google("gemini-2.5-pro-exp-03-25"),
         'chat-model-reasoning': wrapLanguageModel({
           model: groq('deepseek-r1-distill-llama-70b'),
           middleware: extractReasoningMiddleware({ tagName: 'think' }),
